@@ -41,8 +41,6 @@ void topological_sort(std::vector<std::vector<int>> &vertexes, std::vector<int> 
 int main() {
     freopen("topsort.in", "r", stdin);
     freopen("topsort.out", "w", stdout);
-//    freopen("C:\\Users\\Andrz\\CLionProjects\\AaDSLAB9\\task1\\topsort.in", "r", stdin);
-//    freopen("C:\\Users\\Andrz\\CLionProjects\\AaDSLAB9\\task1\\topsort.out", "w", stdout);
     std::vector<std::vector<int>> vertexes;
     std::vector<int> used{0};
     std::vector<int> result;
