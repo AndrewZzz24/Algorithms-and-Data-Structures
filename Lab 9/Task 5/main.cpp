@@ -33,7 +33,7 @@ preparations(std::vector<std::vector<int>> &vertexes, std::vector<int> &used,
             DFS(i, vertexes, used, result);
         }
     }
-};
+}
 
 int main() {
     freopen("hamiltonian.in", "r", stdin);
