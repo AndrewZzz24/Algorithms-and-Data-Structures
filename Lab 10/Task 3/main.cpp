@@ -5,27 +5,27 @@
 class Edges {
 
 private:
-    int left_end;
-    int right_end;
-    int weight;
+    long long left_end;
+    long long right_end;
+    long long weight;
 
 public:
 
-    Edges(int &l, int &r, int &w) : left_end(l), right_end(r), weight(w) {}
+    Edges(long long &l, long long &r, long long &w) : left_end(l), right_end(r), weight(w) {}
 
-    int getLE() const {
+    long long getLE() const {
 
         return left_end;
 
     };
 
-    int getRE() const {
+    long long getRE() const {
 
         return right_end;
 
     }
 
-    int getW() const {
+    long long getW() const {
 
         return weight;
 
@@ -51,13 +51,13 @@ public:
 
 };
 
-void input(int &n, int &m, std::vector<Edges> &edges) {
+void input(long long &n, long long &m, std::vector<Edges> &edges) {
 
     std::cin >> n >> m;
 
     for (size_t i = 0; i < m; i++) {
 
-        int from, to, weight;
+        long long from, to, weight;
 
         std::cin >> from >> to >> weight;
 
@@ -69,26 +69,71 @@ void input(int &n, int &m, std::vector<Edges> &edges) {
 
 }
 
-int find_min_mst(int n, std::vector<Edges> &edges) {
+long long find_min_mst(long long &n, long long &m, std::vector<Edges> &edges) {
 
-    int result = 0;
-    std::vector<int> sets;
+    long long count = 0;
+    long long result = 0;
+    std::vector<long long> sets(n);
+    std::vector<long long> num_of_comp;
+    num_of_comp.assign(n, 1);
 
     for (size_t i = 0; i < n; i++)
-        sets.push_back(i);
+        sets[i] = i;
 
     std::sort(edges.begin(), edges.end());
 
     for (auto &edge : edges) {
 
-        if (sets[edge.getLE()] != sets[edge.getRE()]) {
+        if (count == n - 1)
+            break;
 
+        long long left_ed = edge.getLE();
+        long long right_ed = edge.getRE();
+
+        if (sets[left_ed] != sets[right_ed]) {
+
+            count++;
             result += edge.getW();
-            int set1 = sets[edge.getLE()];
-            int set2 = sets[edge.getRE()];
-            sets[set2] = set1;
-            for (auto &j : sets)
-                if (j == set2) j = set1;
+            if (num_of_comp[left_ed] == 1) {
+
+                sets[left_ed] = sets[right_ed];
+                num_of_comp[right_ed]++;
+                num_of_comp[left_ed]++;
+                continue;
+
+            }
+
+            if (num_of_comp[right_ed] == 1) {
+
+                sets[right_ed] = sets[left_ed];
+                num_of_comp[right_ed]++;
+                num_of_comp[left_ed]++;
+                continue;
+
+            }
+
+            long long set1 = sets[left_ed];
+            long long set2 = sets[right_ed];
+            long long f = left_ed;
+
+            if (num_of_comp[left_ed] < num_of_comp[right_ed]) {
+
+                set1 = sets[right_ed];
+                set2 = sets[left_ed];
+                f = right_ed;
+
+            }
+
+            for (auto &j : sets) {
+
+                if (j == set2) {
+
+                    num_of_comp[f]++;
+                    j = set1;
+
+                }
+
+            }
 
         }
 
@@ -99,17 +144,18 @@ int find_min_mst(int n, std::vector<Edges> &edges) {
 }
 
 int main() {
-
-    freopen("C:\\Users\\Andrz\\CLionProjects\\Algorithms-and-Data-Structures\\Lab 10\\Task 3\\spantree3.in", "r",
+    std::cin.tie(nullptr);
+    std::ios_base::sync_with_stdio(false);
+    freopen("spantree3.in", "r",
             stdin);
-    freopen("C:\\Users\\Andrz\\CLionProjects\\Algorithms-and-Data-Structures\\Lab 10\\Task 3\\spantree3.out", "w",
+    freopen("spantree3.out", "w",
             stdout);
 
-    int n, m;
+    long long n, m;
     std::vector<Edges> edges;
 
     input(n, m, edges);
-    std::cout << find_min_mst(n, edges) << std::endl;
+    std::cout << find_min_mst(n, m, edges) << std::endl;
 
     return 0;
 
