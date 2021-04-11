@@ -23,7 +23,7 @@ void input(int &n, std::vector<Edge> &edges) {
 
             int tmp_num;
             std::cin >> tmp_num;
-            if (tmp_num != std::pow(10, 9) && tmp_num != 0) {
+            if (tmp_num != std::pow(10, 9)) {
                 Edge tmp{};
                 tmp.to_ = i;
                 tmp.from_ = j;
@@ -43,13 +43,13 @@ void Ford_Bellman_algorithm(int &n, int &s, std::vector<Edge> &edges) {
     p.assign(n, -1);
     distances[s] = 0;
 
-    for (int i = 0; i < n - 1   ; i++) {
+    for (int i = 0; i < n; i++) {
 
-        for (unsigned j = 0; j < edges.size(); j++) {
+        for (auto &edge : edges) {
 
-            long long from = edges[j].from_;
-            long long to = edges[j].to_;
-            long long weight = edges[j].weight_;
+            long long from = edge.from_;
+            long long to = edge.to_;
+            long long weight = edge.weight_;
 
             if (distances[from] + weight < distances[to]) {
                 distances[to] = distances[from] + weight;
@@ -59,45 +59,37 @@ void Ford_Bellman_algorithm(int &n, int &s, std::vector<Edge> &edges) {
         }
     }
     std::vector<long long> answer;
+    for (auto &edge : edges) {
 
-    for (unsigned j = 0; j < edges.size(); j++) {
-
-        long long from = edges[j].from_;
-        long long to = edges[j].to_;
-        long long weight = edges[j].weight_;
-
-        if (distances[from] + weight < distances[to]) {
+        if (distances[edge.to_] > edge.weight_ + distances[edge.from_]) {
 
             for (int i = 0; i < n; i++)
-                to = p[to];
+                edge.to_ = p[edge.to_];
 
-            from = to;
+            edge.from_ = edge.to_;
 
-            while (from != p[to]) {
+            for (edge.from_ = edge.to_;; edge.from_ = p[edge.from_]) {
 
-                answer.push_back(to);
-                to = p[to];
+                answer.push_back(edge.from_);
+
+                if (edge.from_ == edge.to_ && answer.size() > 1)
+                    break;
 
             }
-            std::cout << "YES" << std::endl;
-            std::cout << answer.size() << std::endl;
-            std::reverse(answer.begin(), answer.end());
-            break;
 
+            std::reverse(answer.begin(), answer.end());
+
+            std::cout << "YES" << std::endl << answer.size() << std::endl;
+
+            for (auto &i: answer)
+                std::cout << i + 1 << ' ';
+
+            std::cout << std::endl;
+            exit(0);
         }
     }
+    std::cout << "NO" << std::endl;
 
-    if (answer.empty())
-
-        std::cout << "NO" << std::endl;
-
-    else {
-
-        for (auto &i : answer)
-            std::cout << i << ' ';
-
-        std::cout << std::endl;
-    }
 }
 
 
@@ -108,8 +100,8 @@ signed main() {
 
     int n, num = 0;
 
-    freopen("C:\\Users\\Andrz\\CLionProjects\\Algorithms-and-Data-Structures\\Lab 11\\Task 5\\negcycle.in", "r", stdin);
-    freopen("C:\\Users\\Andrz\\CLionProjects\\Algorithms-and-Data-Structures\\Lab 11\\Task 5\\negcycle.out", "w",
+    freopen("negcycle.in", "r", stdin);
+    freopen("negcycle.out", "w",
             stdout);
 
     std::vector<Edge> edges;
