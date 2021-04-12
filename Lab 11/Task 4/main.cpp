@@ -1,81 +1,116 @@
 #include <iostream>
 #include <vector>
+#include <set>
+#include <cmath>
+#include <algorithm>
 
 #define int long long
-const int inf = 2e18;
+const long long inf = 9e18;
 
-void input(int &n, int &m, std::vector<std::vector<std::pair<int, int>>> &vert_matrix) {
+struct Edge {
+    int from_;
+    int to_;
+    int weight_;
+};
 
-    std::cin >> n >> m;
+void input(int &n, int &m, int &s, std::vector<Edge> &edges, std::vector<std::vector<int>> &vert_matrix) {
 
+    std::cin >> n >> m >> s;
+    s--;
     vert_matrix.resize(n);
-
-    for (size_t j = 0; j < m; j++) {
+    for (size_t i = 0; i < m; i++) {
 
         int from, to, weight;
+
         std::cin >> from >> to >> weight;
-        vert_matrix[from - 1].push_back(std::make_pair(to - 1, weight));
-        vert_matrix[to - 1].push_back(std::make_pair(from - 1, weight));
+
+        Edge tmp_edge{};
+        tmp_edge.to_ = to - 1;
+        tmp_edge.from_ = from - 1;
+        tmp_edge.weight_ = weight;
+
+        edges.push_back(tmp_edge);
+        vert_matrix[from - 1].push_back(to - 1);
 
     }
 
-
 }
 
-void dijkstra(int &n, int &m, int &s, std::vector<std::vector<std::pair<int, int>>> &vertexes) {
+void DFS(std::vector<bool> &usd_vert, int vert, std::vector<std::vector<int>> &vert_matrix) {
+    usd_vert[vert] = true;
+    for (auto &v : vert_matrix[vert]) {
+        if (!usd_vert[v])
+            DFS(usd_vert, v, vert_matrix);
+    }
+}
 
-    std::vector<int> distances;
-    distances.assign(n, inf);
+void Ford_Bellman_algorithm(int &n, int &s, std::vector<Edge> &edges, std::vector<std::vector<int>> &vert_matrix) {
+
+    std::vector<long long> distances;
     std::vector<bool> used;
+    std::vector<bool> negcycle;
+    negcycle.assign(n, false);
     used.assign(n, false);
-
+    distances.assign(n, inf);
     distances[s] = 0;
 
-    for (size_t i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
 
-        int minvert = -1;
+        for (auto &edge : edges) {
 
-        for (size_t j = 0; j < n; j++)
+            long long from = edge.from_;
+            long long to = edge.to_;
+            long long weight = edge.weight_;
 
-            if (!used[j] && (minvert == -1 || distances[minvert] > distances[j]))
-                minvert = j;
+            if (distances[from] < inf && (distances[from] + weight < distances[to])) {
+                distances[to] = std::max(-1 * inf, distances[from] + weight);
+            }
 
-        if (minvert == -1 || distances[minvert] == inf)
-            break;
+        }
+    }
 
-        used[minvert] = true;
+    for (auto &edge : edges) {
 
-        for (size_t k = 0; k < vertexes[minvert].size(); k++)
-
-            if (((distances[minvert] + vertexes[minvert][k].second) < distances[vertexes[minvert][k].first]))
-
-                distances[vertexes[minvert][k].first] = distances[minvert] + vertexes[minvert][k].second;
+        if (distances[edge.from_] < inf && distances[edge.to_] > edge.weight_ + distances[edge.from_])
+            DFS(used, edge.to_, vert_matrix);
 
     }
 
-    for (auto &i :distances)
-        std::cout << i << ' ';
+    for (size_t index = 0; index < used.size(); index++)
 
-    std::cout << std::endl;
+        if (used[index])
+            distances[index] = -1 * inf;
+
+    for (auto &dist : distances) {
+
+        if (dist == -1 * inf)
+            std::cout << '-' << std::endl;
+        else if (dist == inf)
+            std::cout << '*' <<
+                      std::endl;
+        else
+            std::cout << dist <<
+                      std::endl;
+    }
 
 }
+
 
 signed main() {
 
     std::cin.tie(nullptr);
     std::ios_base::sync_with_stdio(false);
 
-    int n, m;
+    int n, m, s;
 
-    freopen("pathbgep.in", "r", stdin);
-    freopen("pathbgep.out", "w",
+    freopen("path.in", "r", stdin);
+    freopen("path.out", "w",
             stdout);
 
-    std::vector<std::vector<std::pair<int, int>>> vect_matrix;
-
-    input(n, m, vect_matrix);
-    int num = 0;
-    dijkstra(n, m, num, vect_matrix);
+    std::vector<Edge> edges;
+    std::vector<std::vector<int>> vert_matrix;
+    input(n, m, s, edges, vert_matrix);
+    Ford_Bellman_algorithm(n, s, edges, vert_matrix);
 
     return 0;
 
