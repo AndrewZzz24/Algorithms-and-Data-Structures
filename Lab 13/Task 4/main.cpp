@@ -10,7 +10,7 @@ int main() {
     std::string s;
     std::vector<int> pi;
     int n1;
-    //tghff
+    
     std::cin >> n1;
     std::cin >> s;
 
