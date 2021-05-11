@@ -41,10 +41,10 @@ int main() {
 
         }
     }
-    
+
     std::vector<std::vector<std::pair<char, int>>> answers(pi.size() + 1,
                                                            std::vector<std::pair<char, int>>(n1, {0, 0}));
-    for (int q = 0; q < (int)pi.size(); q++) {
+    for (int q = 0; q < (int) pi.size(); q++) {
 
         char current_char = 'a';
 
